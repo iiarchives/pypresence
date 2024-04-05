@@ -29,7 +29,7 @@ class Payload:
                      party_id: str = None, party_size: list = None,
                      join: str = None, spectate: str = None,
                      match: str = None, buttons: list = None,
-                     instance: bool = True, activity: Union[bool, None] = True,
+                     instance: bool = True, name: str = None, type: int = None, activity: Union[bool, None] = True,
                      _rn: bool = True):
 
         # They should already be an int because we give typehints, but some people are fucking stupid and use
@@ -44,6 +44,8 @@ class Payload:
             clear = True
         else:
             act_details = {
+                    "name": name,
+                    "type": type,
                     "state": state,
                     "details": details,
                     "timestamps": {
