@@ -1,7 +1,6 @@
 import json
 import os
 import time
-import sys
 
 from .baseclient import BaseClient
 from .payloads import Payload
@@ -21,14 +20,14 @@ class Presence(BaseClient):
                party_id: str = None, party_size: list = None,
                join: str = None, spectate: str = None,
                match: str = None, buttons: list = None,
-               instance: bool = True, payload_override: dict = None):
+               instance: bool = True, name: str = None, type: int = None, payload_override: dict = None):
 
         if payload_override is None:
             payload = Payload.set_activity(pid=pid, state=state, details=details, start=start, end=end,
                                            large_image=large_image, large_text=large_text,
                                            small_image=small_image, small_text=small_text, party_id=party_id,
                                            party_size=party_size, join=join, spectate=spectate,
-                                           match=match, buttons=buttons, instance=instance, activity=True)
+                                           match=match, buttons=buttons, instance=instance, name=name, type=type, activity=True)
         else:
             payload = payload_override
         self.send_data(1, payload)
@@ -45,9 +44,8 @@ class Presence(BaseClient):
 
     def close(self):
         self.send_data(2, {'v': 1, 'client_id': self.client_id})
+        self.sock_writer.close()
         self.loop.close()
-        if sys.platform == 'win32' or sys.platform == 'win64':
-            self.sock_writer._call_connection_lost(None)
 
 
 class AioPresence(BaseClient):
@@ -63,12 +61,12 @@ class AioPresence(BaseClient):
                      party_id: str = None, party_size: list = None,
                      join: str = None, spectate: str = None,
                      match: str = None, buttons: list = None,
-                     instance: bool = True):
+                     instance: bool = True, name: str = None, type: int = None):
         payload = Payload.set_activity(pid=pid, state=state, details=details, start=start, end=end,
                                        large_image=large_image, large_text=large_text,
                                        small_image=small_image, small_text=small_text, party_id=party_id,
                                        party_size=party_size, join=join, spectate=spectate,
-                                       match=match, buttons=buttons, instance=instance, activity=True)
+                                       match=match, buttons=buttons, instance=instance, name=name, type=type, activity=True)
         self.send_data(1, payload)
         return await self.read_output()
 
@@ -83,6 +81,5 @@ class AioPresence(BaseClient):
 
     def close(self):
         self.send_data(2, {'v': 1, 'client_id': self.client_id})
+        self.sock_writer.close()
         self.loop.close()
-        if sys.platform == 'win32' or sys.platform == 'win64':
-            self.sock_writer._call_connection_lost(None)
